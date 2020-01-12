@@ -71,7 +71,7 @@ int max_motor_distance(Motors* motors, int size_motors, bool debug=false)
   return max_distance;
 }
 
-void exec_steps_multiple_motors(
+Motors* exec_steps_multiple_motors(
   int array_steps[][4],
   int size_array_pins,
   int size_motors,
@@ -114,14 +114,16 @@ void exec_steps_multiple_motors(
           Serial.print(" Position: ");
           Serial.print(array_steps[next_position][i]);
           Serial.print(" Next_position: ");
-          Serial.println(next_position);
+          Serial.print(next_position);
+          Serial.print(" Distance: ");
+          Serial.println(distance_motor);
         }
         if (distance_motor < 0)
         {
           digitalWrite(motors[m].pins[i], array_steps[next_position][(i-(size_array_pins-1))*-1]);
           state_motor = -1;
         }
-        else if (distance_motor = 0)
+        else if (distance_motor == 0)
         {
           state_motor = 0;
         }
@@ -138,6 +140,7 @@ void exec_steps_multiple_motors(
     }
     delayMicroseconds(delay_step);
   }
+  return motors;
 }
 
 /* 
