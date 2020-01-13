@@ -1,5 +1,8 @@
 #include "Arduino.h"
 
+#ifndef CONTROL_STEPER_H
+#define CONTROL_STEPER_H
+
 int* array_motors;
 int* current_pins;
 
@@ -182,3 +185,4 @@ void exec_steps_multiple_motors_old(
   }
 }
  */
+#endif
