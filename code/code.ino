@@ -7,9 +7,11 @@
 using namespace std;
 
 Motors motors[2];
-Motors motors_exec[1];
 int pins_motor0 [4] = {9, 10, 11, 12};
 int pins_motor1 [4] = {5, 6, 7, 8};
+
+int mov_motor = 500; // Steps in a unit
+bool debug = false;
 
 int array_steps [4][4] =
 {
@@ -35,7 +37,6 @@ void setup()
   motors[1].position = 0;
   motors[1].step = 0;
   conf_pin_mode(4, pins_motor1);
-
 }
 
 // Start Guardian
@@ -49,41 +50,31 @@ void loop(){
     option=Serial.readString();
     if(option == "home-all\n") {
       Serial.println("Go to home");
-      Serial.println(motors[0].step);
-      Serial.println(motors[1].step);
       motors[0].steps_to = motors[0].home;
       motors[1].steps_to = motors[1].home;
-      exec_steps_multiple_motors(array_steps, size_array_pins, 2, motors, 1700, false);
-      motors[0].step = motors[0].home;
-      motors[1].step = motors[1].home;
+      exec_steps_multiple_motors(array_steps, size_array_pins, 2, motors, 1700, debug);
     }
     else if(option == "up-all\n") {
       Serial.println("Up all");
-      motors[0].steps_to = motors[0].step -1000;
-      motors_exec[0] = motors[0];
-      exec_steps_multiple_motors(array_steps, size_array_pins, 1, motors_exec, 2000);
-      motors[0].step = motors[0].step -1000;
+      motors[0].steps_to = motors[0].step - mov_motor;
+      exec_steps_multiple_motors(array_steps, size_array_pins, 2, motors, 2000, debug);
     }
     else if(option == "down-all\n") {
       Serial.println("Down all");
-      motors[0].steps_to = motors[0].step +1000;
-      motors_exec[0] = motors[0];
-      exec_steps_multiple_motors(array_steps, size_array_pins, 1, motors_exec, 2000);
-      motors[0].step = motors[0].step +1000;
+      motors[0].steps_to = motors[0].step + mov_motor;
+      exec_steps_multiple_motors(array_steps, size_array_pins, 2, motors, 2000, debug);
     }
     else if(option == "left-all\n") {
       Serial.println("Left all");
-      motors[1].steps_to = motors[1].step +1000;
-      motors_exec[0] = motors[1];
-      exec_steps_multiple_motors(array_steps, size_array_pins, 1, motors_exec, 2000);
-      motors[1].step = motors[1].step +1000;
+      Serial.println(motors[1].steps_to);
+      motors[1].steps_to = motors[1].step - mov_motor;
+      exec_steps_multiple_motors(array_steps, size_array_pins, 2, motors, 2000, debug);
+      Serial.println(motors[1].step);
     }
     else if(option == "right-all\n") {
       Serial.println("Right all");
-      motors[1].steps_to = motors[1].step -1000;
-      motors_exec[0] = motors[1];
-      exec_steps_multiple_motors(array_steps, size_array_pins, 1, motors_exec, 2000);
-      motors[1].step = motors[1].step -1000;
+      motors[1].steps_to = motors[1].step + mov_motor;
+      exec_steps_multiple_motors(array_steps, size_array_pins, 2, motors, 2000, debug);
     }
     else
     {

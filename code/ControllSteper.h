@@ -13,6 +13,7 @@ struct Motors {
   int step;
   int steps_to;
 };
+extern Motors motors[2];
 
 void conf_pin_mode(int size_pins,int* input)
 {
@@ -83,6 +84,8 @@ Motors* exec_steps_multiple_motors(
   bool debug=false
   )
 {
+  Serial.println(motors[0].step);
+  Serial.println(motors[1].step);
   // State 0 = stop
   // State 1 = positive rotation
   // State -1 = negative rotation
@@ -143,6 +146,8 @@ Motors* exec_steps_multiple_motors(
     }
     delayMicroseconds(delay_step);
   }
+  Serial.println(motors[0].step);
+  Serial.println(motors[1].step);
   return motors;
 }
 
