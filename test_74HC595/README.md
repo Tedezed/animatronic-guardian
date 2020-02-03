@@ -6,6 +6,7 @@
 - http://www.haberocean.com/2019/05/7-digit-seven-segment-display-module-from-arduino-uno-through-shift-register-module/
 - https://www.bidorbuy.co.za/item/364825764/74HC595_8_Bit_Breakout_Shift_Register_Module_for_Arduino.html
 - https://bildr.org/2011/08/74hc595-breakout-arduino/
+- https://github.com/catchdave/arduino-gb/blob/master/libraries/Shifter/Shifter.h
 
 ### Info
 
@@ -14,6 +15,75 @@
 - Each motor needs 4 outputs, we can control a total of 12 motors.
 
 ### Example code
+
+```
+#include <Shifter.h>
+
+#define SER_Pin 4 //SER_IN
+#define RCLK_Pin 3 //L_CLOCK
+#define SRCLK_Pin 2 //CLOCK
+
+#define NUM_REGISTERS 2 //how many registers are in the chain
+
+
+//initaize shifter using the Shifter library
+Shifter shifter(SER_Pin, RCLK_Pin, SRCLK_Pin, NUM_REGISTERS);
+
+void setup(){
+
+}
+
+void loop(){
+ for (int n = 0; n < 16 ; n++)
+ {
+ shifter.clear();
+ shifter.write();
+ //
+ shifter.setPin(n, HIGH); //set pin 1 in the chain(second pin) HIGH
+ shifter.write(); //send changes to the chain and display them
+ delay(100);
+ }
+ 
+ }
+```
+
+```
+#include <Shifter.h>
+
+#define SER_Pin 4 //SER_IN - DATA
+#define RCLK_Pin 3 //L_CLOCK
+#define SRCLK_Pin 2 //CLOCK
+
+#define NUM_REGISTERS 2 //how many registers are in the chain
+
+
+//initaize shifter using the Shifter library
+Shifter shifter(SER_Pin, RCLK_Pin, SRCLK_Pin, NUM_REGISTERS);
+
+void setup(){
+
+}
+
+void loop(){
+ shifter.clear(); //set all pins on the shift register chain to LOW
+ shifter.write(); //send changes to the chain and display them
+ 
+ delay(1000);
+
+ for (int n = 0; n < 159 ; n++)
+ {
+ shifter.setPin(n, HIGH); //set pin 1 in the chain(second pin) HIGH
+ }
+ shifter.write(); //send changes to the chain and display them
+ 
+ delay(1000);
+ 
+ shifter.setAll(HIGH); //Set all pins on the chain high
+ shifter.write(); //send changes to the chain and display them
+ 
+ delay(1000);
+ }
+```
 
 ```
 int dataPin = 4;
