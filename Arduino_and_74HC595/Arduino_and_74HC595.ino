@@ -17,7 +17,7 @@ int pins_motor4 [4] = {16, 17, 18, 19};
 int pins_motor5 [4] = {20, 21, 22, 23};
 
 int mov_motor = 500; // Steps in a unit
-int delay_motor = 4000;
+int delay_motor = 2200;
 bool debug = false;
 
 // Conf 74HC595
