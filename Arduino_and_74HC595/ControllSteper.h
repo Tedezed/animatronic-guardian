@@ -14,8 +14,13 @@ struct Motors {
   int position;
   int step;
   int steps_to;
+  // ID for leg, two motors in one leg
+  int arm;
+  // Mode leg: 0 up-down, 1 left-right
+  int arm_mode;
 };
-extern Motors motors[6];
+
+extern Motors motors[12];
 extern Shifter shifter;
 
 void conf_pin_mode(int size_pins,int* input)
@@ -63,7 +68,9 @@ int max_motor_distance(Motors* motors, int size_motors, bool debug=false)
     int distance_motor = to_positive(distance(motors[m].step, motors[m].steps_to));
     if (debug)
     {
-      Serial.print("Actual step: ");
+      Serial.print("[INTERNAL] Motor: ");
+      Serial.print(m);
+      Serial.print(" Actual step: ");
       Serial.print(motors[m].step);
       Serial.print(" Step to: ");
       Serial.print(motors[m].steps_to);
@@ -89,6 +96,7 @@ Motors* exec_steps_multiple_motors(
 {
   for (int m = 0; m < size_motors; m++)
   {
+     Serial.print("[INTERNAL] Motor init step: ");
      Serial.println(motors[m].step);
   }
   // State 0 = stop
@@ -96,7 +104,7 @@ Motors* exec_steps_multiple_motors(
   // State -1 = negative rotation
   int state_motor = 0;
   int max_step = max_motor_distance(motors, size_motors, debug);
-  Serial.print("Exec steps: ");
+  Serial.print("[INTERNAL] Exec steps: ");
   Serial.println(max_step);
   for (int s = 0; s < max_step; s++)
   {
@@ -120,7 +128,7 @@ Motors* exec_steps_multiple_motors(
         int distance_motor = distance(motors[m].step, motors[m].steps_to);
         if (debug)
         {
-          Serial.print("Pin: ");
+          Serial.print("[INTERNAL] Pin: ");
           Serial.print(motors[m].pins[i]);
           Serial.print(" Position: ");
           Serial.print(array_steps[next_position][i]);
@@ -154,6 +162,7 @@ Motors* exec_steps_multiple_motors(
   }
   for (int m = 0; m < size_motors; m++)
   {
+     Serial.print("[INTERNAL] Motor end step: ");
      Serial.println(motors[m].step);
   }
   return motors;
