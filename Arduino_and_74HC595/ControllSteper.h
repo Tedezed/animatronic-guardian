@@ -96,7 +96,9 @@ Motors* exec_steps_multiple_motors(
 {
   for (int m = 0; m < size_motors; m++)
   {
-     Serial.print("[INTERNAL] Motor init step: ");
+     Serial.print("[INTERNAL] Motor ");
+     Serial.print(m);
+     Serial.print(" init step: ");
      Serial.println(motors[m].step);
   }
   // State 0 = stop
@@ -162,7 +164,9 @@ Motors* exec_steps_multiple_motors(
   }
   for (int m = 0; m < size_motors; m++)
   {
-     Serial.print("[INTERNAL] Motor end step: ");
+     Serial.print("[INTERNAL] Motor ");
+     Serial.print(m);
+     Serial.print(" end step: ");
      Serial.println(motors[m].step);
   }
   return motors;

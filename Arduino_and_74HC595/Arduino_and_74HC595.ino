@@ -210,8 +210,10 @@ void loop(){
     }
     else
     {
-      Serial.print("[ERROR] Option not found: ");
-      Serial.println(option);
+      if (option != "\n") {
+        Serial.print("[ERROR] Option not found: ");
+        Serial.println(option);
+      }
     }
     Serial.flush(); 
   }
