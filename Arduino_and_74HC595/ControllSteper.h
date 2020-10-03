@@ -91,6 +91,7 @@ Motors* exec_steps_multiple_motors(
   int size_motors,
   Motors* motors,
   int delay_step=2000,
+  bool off_in_the_end=false,
   bool debug=false
   )
 {
@@ -168,6 +169,12 @@ Motors* exec_steps_multiple_motors(
      Serial.print(m);
      Serial.print(" end step: ");
      Serial.println(motors[m].step);
+     if (off_in_the_end) {
+      for (int i = 0; i < size_array_pins; i++) {
+        shifter.setPin(motors[m].pins[i], 0);
+        shifter.write();
+      }
+     }
   }
   return motors;
 }

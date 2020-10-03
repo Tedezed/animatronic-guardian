@@ -1,5 +1,5 @@
 // Animatronic Guardian
-// By Tedezed
+// By: Juan Manuel Torres (Tedezed)
 // Code for motors 28BYJ-48
 #include "Arduino.h"
 #include "ControllSteper.h"
@@ -15,6 +15,7 @@ Shifter shifter(SER_Pin, RCLK_Pin, SRCLK_Pin, NUM_REGISTERS);
 
 // User vars
 bool debug = false;
+bool off_in_the_end = true;
 
 Servo servoMotor;
 int servo_pin = 10;
@@ -35,13 +36,13 @@ int mov_motor = 500; // Steps in a unit
 int delay_motor = 2300;
 
 // Max 200 motors
-int pins_motor0 [4] = {0, 1, 2, 3};
+int pins_motor0 [4] = {3, 2, 1, 0};
 int pins_motor1 [4] = {4, 5, 6, 7};
 int pins_motor2 [4] = {8, 9, 10, 11};
 int pins_motor3 [4] = {12, 13, 14, 15};
 int pins_motor4 [4] = {16, 17, 18, 19};
 int pins_motor5 [4] = {20, 21, 22, 23};
-int pins_motor6 [4] = {24, 25, 26, 27};
+int pins_motor6 [4] = {27, 26, 25, 24};
 int pins_motor7 [4] = {28, 29, 30, 31};
 int pins_motor8 [4] = {32, 33, 34, 35};
 int pins_motor9 [4] = {36, 37, 38, 39};
@@ -83,22 +84,22 @@ void setup()
   motors[5].arm = 2;
   motors[5].arm_mode = 1;
 
-  motors[6].pins = pins_motor4;
-  motors[7].pins = pins_motor5;
+  motors[6].pins = pins_motor6;
+  motors[7].pins = pins_motor7;
   motors[6].arm = 3;
   motors[6].arm_mode = 0;
   motors[7].arm = 3;
   motors[7].arm_mode = 1;
 
-  motors[8].pins = pins_motor4;
-  motors[9].pins = pins_motor5;
+  motors[8].pins = pins_motor8;
+  motors[9].pins = pins_motor9;
   motors[8].arm = 4;
   motors[8].arm_mode = 0;
   motors[9].arm = 4;
   motors[9].arm_mode = 1;
 
-  motors[10].pins = pins_motor4;
-  motors[11].pins = pins_motor5;
+  motors[10].pins = pins_motor10;
+  motors[11].pins = pins_motor11;
   motors[10].arm = 5;
   motors[10].arm_mode = 0;
   motors[11].arm = 5;
@@ -106,10 +107,11 @@ void setup()
 }
 
 void motor_multiplexor(String option, int only_one, int mode, int mov_motor){
-  // Modes: 0 home, 1 motor
+  // Modes: 0 home, 1 motor, 2 vertical, 3 horizontal
   Serial.print("[EXEC] ");
-  Serial.print(option);
+  Serial.println(option);
   if (only_one < 200) {
+    Serial.println("[motor_multiplexor] One Motor");
     if ( mode == 0 ) {
       motors[only_one].steps_to = motors[only_one].home;
     }
@@ -118,21 +120,31 @@ void motor_multiplexor(String option, int only_one, int mode, int mov_motor){
       Serial.println(only_one);
       motors[only_one].steps_to = motors[only_one].step + mov_motor;
     }
-    //exec_steps_multiple_motors(array_steps, size_array_pins, size_motors, motors, delay_motor, debug);
-    exec_steps_multiple_motors(array_steps, size_array_pins, size_motors, motors, delay_motor, debug);
+    //exec_steps_multiple_motors(array_steps, size_array_pins, size_motors, motors, delay_motor, off_in_the_end, debug);
+    exec_steps_multiple_motors(array_steps, size_array_pins, size_motors, motors, delay_motor, off_in_the_end, debug);
   }
   else 
   {
+    Serial.println("[motor_multiplexor] All Motors");
     for (int m = 0; m < size_motors; m++)
       {
       if ( mode == 0 ) {
         motors[m].steps_to = motors[m].home;
       }
       else {
-        motors[m].steps_to = motors[m].step + mov_motor;
+        if ( mode == 2 ) {
+          if ( motors[m].arm_mode == 0 ) {
+            motors[m].steps_to = motors[m].step + mov_motor; 
+          }
+        }
+        else {
+          if ( motors[m].arm_mode == 1 ) {
+            motors[m].steps_to = motors[m].step + mov_motor; 
+          }
+        }
       }
     }
-    exec_steps_multiple_motors(array_steps, size_array_pins, size_motors, motors, delay_motor, debug);
+    exec_steps_multiple_motors(array_steps, size_array_pins, size_motors, motors, delay_motor, off_in_the_end, debug);
   }
 }
 
@@ -146,6 +158,8 @@ void loop(){
   //Serial.println(servoMotor.read());
   if (Serial.available()>0){
     option=Serial.readString();
+    Serial.print("> ");
+    Serial.print(option);
     if(option == "home\n") {
       motor_multiplexor(option, only_one, 0, 0);
     }
@@ -158,16 +172,16 @@ void loop(){
       }
     }
     else if(option == "up\n") {
-      motor_multiplexor(option, only_one_vertical_motor, 1, -mov_motor);
+      motor_multiplexor(option, only_one_vertical_motor, 2, -mov_motor);
     }
     else if(option == "down\n") {
-      motor_multiplexor(option, only_one_vertical_motor, 1, +mov_motor);
+      motor_multiplexor(option, only_one_vertical_motor, 2, +mov_motor);
     }
     else if(option == "left\n") {
-      motor_multiplexor(option, only_one_horizontal_motor, 1, -mov_motor);
+      motor_multiplexor(option, only_one_horizontal_motor, 3, -mov_motor);
     }
     else if(option == "right\n") {
-      motor_multiplexor(option, only_one_horizontal_motor, 1, +mov_motor);
+      motor_multiplexor(option, only_one_horizontal_motor, 3, +mov_motor);
     }
     else if(option == "head-left\n") {
       servoMotor.attach(servo_pin);
@@ -204,6 +218,8 @@ void loop(){
     else if(option == "all\n") {
       Serial.println("[INFO] Select all motors...");
       only_one = 300;
+      only_one_vertical_motor = 300;
+      only_one_horizontal_motor = 300;
     }
     else if(option == "hi\n") {
       Serial.println("Hi!");
